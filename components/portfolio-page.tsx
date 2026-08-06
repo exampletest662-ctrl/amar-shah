@@ -241,9 +241,7 @@ export default function PortfolioPage() {
     setStatus("");
     const form = event.currentTarget;
     const formData = new FormData(form);
-console.log(
-  process.env.NEXT_PUBLIC_RESEND_API_KEY
-);
+
     formData.append("access_key", process.env.NEXT_PUBLIC_RESEND_API_KEY!);
 
     formData.append("subject", "New Portfolio Enquiry");
