@@ -2,28 +2,29 @@ import { Analytics } from '@vercel/analytics/next'
 import { DM_Mono, Inter } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { profile } from '@/lib/profile'
 
-const siteUrl = 'https://amarshah.dev'
+const siteUrl = profile.portfolioUrl
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
 const dmMono = DM_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-dm-mono', display: 'swap' })
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: 'Amar Shah | React.js Developer | Next.js Developer | Frontend Engineer',
+  title: `${profile.name} | React.js Developer | Next.js Developer | Frontend Engineer`,
   description: 'Professional React.js and Next.js Developer specializing in responsive web applications, dashboards, API integration and frontend development.',
-  keywords: ['Amar Shah', 'React.js Developer', 'Next.js Developer', 'Frontend Engineer', 'freelance web developer'],
+  keywords: [profile.name, 'React.js Developer', 'Next.js Developer', 'Frontend Engineer', 'freelance web developer'],
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Amar Shah | React.js Developer | Next.js Developer',
+    title: `${profile.name} | React.js Developer | Next.js Developer`,
     description: 'Responsive web applications, dashboards, API integration and frontend development for businesses worldwide.',
     url: siteUrl,
-    siteName: 'Amar Shah',
+    siteName: profile.name,
     type: 'website',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Amar Shah | React.js Developer | Next.js Developer',
+    title: `${profile.name} | React.js Developer | Next.js Developer`,
     description: 'Frontend engineering for businesses that need clear, reliable web experiences.',
   },
   icons: {
@@ -49,7 +50,7 @@ const structuredData = {
   '@graph': [
     {
       '@type': 'Person',
-      name: 'Amar Shah',
+      name: profile.name,
       url: siteUrl,
       jobTitle: 'React.js and Next.js Developer',
       description: 'Frontend engineer specializing in responsive web applications, dashboards, API integration and frontend development.',
@@ -57,16 +58,16 @@ const structuredData = {
     },
     {
       '@type': 'WebSite',
-      name: 'Amar Shah',
+      name: profile.name,
       url: siteUrl,
-      description: 'Professional portfolio of Amar Shah, React.js and Next.js Developer.',
+      description: `Professional portfolio of ${profile.name}, React.js and Next.js Developer.`,
     },
   ],
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${dmMono.variable} bg-background`}>
+    <html lang="en" className={`${inter.variable} ${dmMono.variable} bg-background`}><head>{profile.linkedin && <link rel="me" href={profile.linkedin} />}{profile.github && <link rel="me" href={profile.github} />}</head>
       <body className="antialiased">
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />

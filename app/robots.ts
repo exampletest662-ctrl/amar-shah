@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 
-const siteUrl = 'https://amarshah.dev'
+import { profile } from '@/lib/profile'
+
+const siteUrl = profile.portfolioUrl
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -28,6 +28,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { FormEvent, useState } from 'react'
+import { profile } from '@/lib/profile'
 
 const navItems = [
   ['About', '#about'], ['Experience', '#experience'], ['Services', '#services'],
@@ -81,15 +82,6 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: 'easeOut' } },
 }
 
-const contact = {
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'hello@amarshah.dev',
-  linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL ?? '',
-  github: process.env.NEXT_PUBLIC_GITHUB_URL ?? '',
-  phone: process.env.NEXT_PUBLIC_PHONE ?? '',
-  location: process.env.NEXT_PUBLIC_LOCATION ?? 'India · Working worldwide',
-  resume: process.env.NEXT_PUBLIC_RESUME_URL ?? '',
-}
-
 function SectionHeading({ eyebrow, title, body }: { eyebrow: string; title: string; body?: string }) {
   return (
     <div className="section-heading">
@@ -101,7 +93,7 @@ function SectionHeading({ eyebrow, title, body }: { eyebrow: string; title: stri
 }
 
 function Logo() {
-  return <a href="#home" className="logo" aria-label="Amar Shah home"><span className="logo-mark">A</span><span>Amar Shah</span></a>
+  return <a href="#home" className="logo" aria-label={`${profile.name} home`}><span className="logo-mark">{profile.name.charAt(0)}</span><span>{profile.name}</span></a>
 }
 
 export default function PortfolioPage() {
@@ -137,7 +129,9 @@ export default function PortfolioPage() {
       String(data.get('message') ?? ''),
     ].join('\\n')
     setSent(true)
-    window.location.href = `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    if (profile.email) {
+      window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    }
   }
 
   return (
@@ -168,7 +162,7 @@ export default function PortfolioPage() {
                 <a className="button button-primary" href="#contact">Hire me <ArrowUpRight size={16} /></a>
                 <a className="button button-ghost" href="#portfolio">View my work <ArrowUpRight size={16} /></a>
               </div>
-              <div className="availability"><span className="availability-dot" />Available for freelance frontend work <span className="availability-line" /> Based in India · Working worldwide</div>
+              <div className="availability"><span className="availability-dot" />Available for freelance frontend work {profile.location && <><span className="availability-line" /> {profile.location}</>}</div>
             </motion.div>
             <motion.div className="hero-visual" initial={reducedMotion ? false : { opacity: 0, scale: .94 }} animate={{ opacity: 1, scale: 1 }} transition={reducedMotion ? { duration: 0 } : { duration: .8, delay: .15 }}>
               <div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" />
@@ -199,9 +193,9 @@ export default function PortfolioPage() {
 
         <section className="section container faq-section" id="faq"><SectionHeading eyebrow="Questions, answered" title="A few things you might be wondering." /><div className="faq-list">{faqs.map(([question, answer], index) => <div className={`faq-item ${openFaq === index ? 'is-open' : ''}`} key={question}><button onClick={() => setOpenFaq(openFaq === index ? null : index)} aria-expanded={openFaq === index}><span>{question}</span><ChevronDown size={18} /></button><div className="faq-answer"><p>{answer}</p></div></div>)}</div></section>
 
-        <section className="section contact-section" id="contact"><div className="container contact-grid"><div className="contact-copy"><p className="eyebrow"><span />Contact</p><h2>Need a frontend developer? <em>Let&apos;s talk.</em></h2><p>Tell me what you’re building, what needs to change, or where the current frontend is getting in the way. I’ll reply with a practical next step.</p><p className="reply-note">Usually replies within 24 hours.</p><div className="contact-links"><a href={`mailto:${contact.email}`}><Mail size={17} /> {contact.email}</a>{contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer"><Link size={17} /> LinkedIn</a>}{contact.github && <a href={contact.github} target="_blank" rel="noreferrer"><GitBranch size={17} /> GitHub</a>}{contact.phone && <a href={`tel:${contact.phone}`}><BriefcaseBusiness size={17} /> {contact.phone}</a>}<span className="contact-location"><Globe2 size={17} /> {contact.location}</span></div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-row"><label>Name<input required name="name" placeholder="Your name" /></label><label>Email<input required type="email" name="email" placeholder="you@example.com" /></label></div><div className="form-row"><label>Company<input name="company" placeholder="Your company" /></label><label>Project type<select name="project"><option>Website</option><option>Web application</option><option>Dashboard</option><option>Something else</option></select></label></div><label>Message<textarea required name="message" placeholder="Tell me a little about what you’re building..." rows={5} /></label><button className="button button-primary form-submit" type="submit">{sent ? 'Email draft opened' : 'Open email draft'} {sent ? <Check size={16} /> : <Send size={16} />}</button><p className="form-note" aria-live="polite">{sent ? 'Your message details have been added to a new email draft.' : `This opens your email app with the project details pre-filled.`}</p></form></div></section>
+        <section className="section contact-section" id="contact"><div className="container contact-grid"><div className="contact-copy"><p className="eyebrow"><span />Contact</p><h2>Need a frontend developer? <em>Let&apos;s talk.</em></h2><p>Tell me what you’re building, what needs to change, or where the current frontend is getting in the way. I’ll reply with a practical next step.</p><p className="reply-note">Usually replies within 24 hours.</p><div className="contact-links">{profile.email && <a href={`mailto:${profile.email}`}><Mail size={17} /> {profile.email}</a>}{profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noreferrer"><Link size={17} /> LinkedIn</a>}{profile.github && <a href={profile.github} target="_blank" rel="noreferrer"><GitBranch size={17} /> GitHub</a>}{profile.phone && <a href={`tel:${profile.phone}`}><BriefcaseBusiness size={17} /> {profile.phone}</a>}{profile.location && <span className="contact-location"><Globe2 size={17} /> {profile.location}</span>}</div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-row"><label>Name<input required name="name" placeholder="Your name" /></label><label>Email<input required type="email" name="email" placeholder="you@example.com" /></label></div><div className="form-row"><label>Company<input name="company" placeholder="Your company" /></label><label>Project type<select name="project"><option>Website</option><option>Web application</option><option>Dashboard</option><option>Something else</option></select></label></div><label>Message<textarea required name="message" placeholder="Tell me a little about what you’re building..." rows={5} /></label><button className="button button-primary form-submit" type="submit">{sent ? 'Email draft opened' : 'Open email draft'} {sent ? <Check size={16} /> : <Send size={16} />}</button><p className="form-note" aria-live="polite">{sent ? 'Your message details have been added to a new email draft.' : `This opens your email app with the project details pre-filled.`}</p></form></div></section>
       </main>
-      <footer className="site-footer"><div className="container footer-inner"><div><Logo /><p>React.js · Next.js · TypeScript</p></div><div className="footer-links"><div><strong>Quick links</strong><a href="#about">About</a><a href="#portfolio">Work</a><a href="#contact">Contact</a></div><div><strong>Social</strong>{contact.linkedin && <a href={contact.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}{contact.github && <a href={contact.github} target="_blank" rel="noreferrer">GitHub</a>}{contact.resume && <a href={contact.resume} target="_blank" rel="noreferrer">Resume download</a>}</div></div><div className="footer-right"><span>© {new Date().getFullYear()} Amar Shah</span><a href="#home">Back to top <ArrowUpRight size={14} /></a></div></div></footer>
+      <footer className="site-footer"><div className="container footer-inner"><div><Logo /><p>React.js · Next.js · TypeScript</p></div><div className="footer-links"><div><strong>Quick links</strong><a href="#about">About</a><a href="#portfolio">Work</a><a href="#contact">Contact</a></div><div><strong>Social</strong>{profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}{profile.github && <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a>}{profile.resume && <a href={profile.resume} target="_blank" rel="noreferrer">Resume download</a>}</div></div><div className="footer-right"><span>© {new Date().getFullYear()} Amar Shah</span><a href="#home">Back to top <ArrowUpRight size={14} /></a></div></div></footer>
     </div>
   )
 }
