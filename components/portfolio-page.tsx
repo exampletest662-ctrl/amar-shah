@@ -115,22 +115,39 @@ export default function PortfolioPage() {
     })
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = event.currentTarget
-    const data = new FormData(form)
-    const subject = `${data.get('project') ?? 'Web project'} enquiry from ${data.get('name') ?? 'a new contact'}`
-    const body = [
-      `Name: ${data.get('name') ?? ''}`,
-      `Email: ${data.get('email') ?? ''}`,
-      `Company: ${data.get('company') ?? ''}`,
-      `Project type: ${data.get('project') ?? ''}`,
-      '',
-      String(data.get('message') ?? ''),
-    ].join('\\n')
-    setSent(true)
-    if (profile.email) {
-      window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    const formData = new FormData(form)
+
+    const data = {
+      name: formData.get('name')?.toString() ?? '',
+      email: formData.get('email')?.toString() ?? '',
+      company: formData.get('company')?.toString() ?? '',
+      project: formData.get('project')?.toString() ?? '',
+      message: formData.get('message')?.toString() ?? '',
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed");
+      }
+
+      setSent(true);
+
+      form.reset();
+    } catch (err) {
+      alert("Unable to send message. Please try again.");
     }
   }
 
@@ -193,7 +210,7 @@ export default function PortfolioPage() {
 
         <section className="section container faq-section" id="faq"><SectionHeading eyebrow="Questions, answered" title="A few things you might be wondering." /><div className="faq-list">{faqs.map(([question, answer], index) => <div className={`faq-item ${openFaq === index ? 'is-open' : ''}`} key={question}><button onClick={() => setOpenFaq(openFaq === index ? null : index)} aria-expanded={openFaq === index}><span>{question}</span><ChevronDown size={18} /></button><div className="faq-answer"><p>{answer}</p></div></div>)}</div></section>
 
-        <section className="section contact-section" id="contact"><div className="container contact-grid"><div className="contact-copy"><p className="eyebrow"><span />Contact</p><h2>Need a frontend developer? <em>Let&apos;s talk.</em></h2><p>Tell me what you’re building, what needs to change, or where the current frontend is getting in the way. I’ll reply with a practical next step.</p><p className="reply-note">Usually replies within 24 hours.</p><div className="contact-links">{profile.email && <a href={`mailto:${profile.email}`}><Mail size={17} /> {profile.email}</a>}{profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noreferrer"><Link size={17} /> LinkedIn</a>}{profile.github && <a href={profile.github} target="_blank" rel="noreferrer"><GitBranch size={17} /> GitHub</a>}{profile.phone && <a href={`tel:${profile.phone}`}><BriefcaseBusiness size={17} /> {profile.phone}</a>}{profile.location && <span className="contact-location"><Globe2 size={17} /> {profile.location}</span>}</div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-row"><label>Name<input required name="name" placeholder="Your name" /></label><label>Email<input required type="email" name="email" placeholder="you@example.com" /></label></div><div className="form-row"><label>Company<input name="company" placeholder="Your company" /></label><label>Project type<select name="project"><option>Website</option><option>Web application</option><option>Dashboard</option><option>Something else</option></select></label></div><label>Message<textarea required name="message" placeholder="Tell me a little about what you’re building..." rows={5} /></label><button className="button button-primary form-submit" type="submit">{sent ? 'Email draft opened' : 'Open email draft'} {sent ? <Check size={16} /> : <Send size={16} />}</button><p className="form-note" aria-live="polite">{sent ? 'Your message details have been added to a new email draft.' : `This opens your email app with the project details pre-filled.`}</p></form></div></section>
+        <section className="section contact-section" id="contact"><div className="container contact-grid"><div className="contact-copy"><p className="eyebrow"><span />Contact</p><h2>Need a frontend developer? <em>Let&apos;s talk.</em></h2><p>Tell me what you’re building, what needs to change, or where the current frontend is getting in the way. I’ll reply with a practical next step.</p><p className="reply-note">Usually replies within 24 hours.</p><div className="contact-links">{profile.email && <a href={`mailto:${profile.email}`}><Mail size={17} /> {profile.email}</a>}{profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noreferrer"><Link size={17} /> LinkedIn</a>}{profile.github && <a href={profile.github} target="_blank" rel="noreferrer"><GitBranch size={17} /> GitHub</a>}{profile.phone && <a href={`tel:${profile.phone}`}><BriefcaseBusiness size={17} /> {profile.phone}</a>}{profile.location && <span className="contact-location"><Globe2 size={17} /> {profile.location}</span>}</div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-row"><label>Name<input required name="name" placeholder="Your name" /></label><label>Email<input required type="email" name="email" placeholder="you@example.com" /></label></div><div className="form-row"><label>Company<input name="company" placeholder="Your company" /></label><label>Project type<select name="project"><option>Website</option><option>Web application</option><option>Dashboard</option><option>Something else</option></select></label></div><label>Message<textarea required name="message" placeholder="Tell me a little about what you’re building..." rows={5} /></label><button className="button button-primary form-submit" type="submit">{sent ? 'Message Sent' : 'Send Message'} {sent ? <Check size={16} /> : <Send size={16} />}</button><p className="form-note" aria-live="polite">{sent ? 'Thanks! I\'ll get back to you within 24 hours.' : `Your message will be sent directly to my inbox.`}</p></form></div></section>
       </main>
       <footer className="site-footer"><div className="container footer-inner"><div><Logo /><p>React.js · Next.js · TypeScript</p></div><div className="footer-links"><div><strong>Quick links</strong><a href="#about">About</a><a href="#portfolio">Work</a><a href="#contact">Contact</a></div><div><strong>Social</strong>{profile.linkedin && <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}{profile.github && <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a>}{profile.resume && <a href={profile.resume} target="_blank" rel="noreferrer">Resume download</a>}</div></div><div className="footer-right"><span>© {new Date().getFullYear()} Amar Shah</span><a href="#home">Back to top <ArrowUpRight size={14} /></a></div></div></footer>
     </div>
